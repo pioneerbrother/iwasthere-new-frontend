@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(-45deg, #ff7f50, #daa520, #87a96b, #2d5016, #cd853f);
+  background-size: 400% 400%;
+  animation: naturalGradientShift 20s ease infinite;
+}
+
+@keyframes naturalGradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
