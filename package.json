@@ -3,12 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+
 "scripts": {
-    "dev": "node ./scripts/build-posts.js && vite",
-    "build": "node ./scripts/build-posts.js && vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
-  },
+  "dev": "vite",
+  
+  "build": "node ./scripts/build-asset-list.js && vite build",
+  "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+  "preview": "vite preview"
+},
   "dependencies": {
     "@clerk/clerk-react": "^5.38.1",
     "@supabase/supabase-js": "^2.54.0",
