@@ -18,7 +18,11 @@ function DashboardPage() {
         setIsLoading(true);
         setError(''); // Clear previous errors
         try {
-            const response = await api.get('/sentries');
+            // --- THIS IS THE FINAL ATTEMPT ---
+            // We add a random query parameter to prevent any form of caching.
+            const cacheBuster = `?_=${new Date().getTime()}`;
+            const response = await api.get(`/sentries${cacheBuster}`);
+            
             setSentries(response.data.sentries || []);
         } catch (err) {
             setError('Failed to load your Sentry watchlist. Please try logging out and back in.');
