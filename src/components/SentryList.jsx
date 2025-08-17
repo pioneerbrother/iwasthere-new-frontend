@@ -1,34 +1,19 @@
-// File: src/components/SentryList.jsx
 import React from 'react';
 
-function SentryList({ sentries, isLoading }) {
-    if (isLoading) {
-        return <p className="p-4 text-gray-500">Loading your watchlist...</p>;
-    }
+export default function SentryList({ sentries, isLoading }) {
+    if (isLoading) return <p>Loading your sentries...</p>;
+    if (!sentries || sentries.length === 0) return <p>You have no active sentries. Add one to begin.</p>;
 
     return (
-        <div className="mt-8 bg-white shadow-md rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-800 p-4 border-b">Your Active Sentries</h2>
-            <ul className="divide-y divide-gray-200">
-                {sentries.length > 0 ? (
-                    sentries.map(sentry => (
-                        <li key={sentry.id} className="p-4">
-                            <p className="font-mono text-sm text-gray-700">
-                                <strong>Contract:</strong> {sentry.contractAddress}
-                            </p>
-                            <p className="font-mono text-sm text-gray-500">
-                                <strong>Event:</strong> {sentry.eventName}
-                            </p>
-                        </li>
-                    ))
-                ) : (
-                    <p className="p-4 text-gray-500">
-                        You have no active Sentries. Add one above to begin monitoring.
-                    </p>
-                )}
+        <div>
+            <h2>Your Active Sentries</h2>
+            <ul>
+                {sentries.map(sentry => (
+                    <li key={sentry.id}>
+                        <strong>Contract:</strong> {sentry.contractAddress} | <strong>Event:</strong> {sentry.eventName}
+                    </li>
+                ))}
             </ul>
         </div>
     );
 }
-
-export default SentryList;
