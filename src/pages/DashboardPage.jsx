@@ -1,21 +1,18 @@
 // File: iwasthere/new-frontend/src/pages/DashboardPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import api from '../services/apiService';
+
 import AddSentryForm from '../components/AddSentryForm.jsx';
 import SentryList from '../components/SentryList.jsx';
-// --- NEW IMPORTS ---
 import AddPriceAlertForm from '../components/AddPriceAlertForm.jsx';
-import PriceAlertList from '../components/PriceAlertList.jsx';
+import PriceAlertList from '../components/PriceAlertList.jsx'; // We'll create this
 
 function DashboardPage() {
-    const { signOut } = useAuth();
     const [sentries, setSentries] = useState([]);
-    const [priceAlerts, setPriceAlerts] = useState([]); // New state for price alerts
+    const [priceAlerts, setPriceAlerts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // This function now fetches BOTH types of rules in parallel.
     const fetchAllRules = useCallback(async () => {
         setIsLoading(true);
         setError('');
@@ -27,8 +24,7 @@ function DashboardPage() {
             setSentries(sentryRes.data.sentries || []);
             setPriceAlerts(priceAlertRes.data.alerts || []);
         } catch (err) {
-            setError('Could not load your rules. Please try logging out and back in.');
-            console.error("Fetch All Rules Error:", err);
+            setError('Failed to load your rules. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -47,24 +43,21 @@ function DashboardPage() {
     };
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <nav style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1>Sentry Command Center</h1>
-                <button onClick={signOut}>Sign Out</button>
-            </nav>
-            <main style={{ padding: '1rem' }}>
-                <AddSentryForm onSentryCreated={handleSentryCreated} />
-                <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
+        <div className="p-8 max-w-4xl mx-auto">
+            <h1 className="text-4xl font-bold">Sentry Command Center</h1>
+            
+            <AddSentryForm onSentryCreated={handleSentryCreated} />
+            <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
 
-                <hr style={{ margin: '2rem 0' }} />
+            <hr className="my-8" />
 
-                <h2>Your Active Rules</h2>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                
-                <SentryList sentries={sentries} isLoading={isLoading} />
-                <PriceAlertList alerts={priceAlerts} isLoading={isLoading} />
-            </main>
+            <h2 className="text-3xl font-bold">Your Active Rules</h2>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            
+            <SentryList sentries={sentries} isLoading={isLoading} />
+            <PriceAlertList alerts={priceAlerts} isLoading={isLoading} />
         </div>
     );
 }
+
 export default DashboardPage;
