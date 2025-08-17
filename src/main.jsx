@@ -5,15 +5,16 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './index.css'
 
-// Import the new WagmiProvider
-import { WagmiProvider } from './contexts/WagmiProvider.jsx'
+// --- THIS IS THE FIX ---
+// Import our newly named and corrected Web3Provider
+import { Web3Provider } from './contexts/Web3Provider.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <WagmiProvider>
+    <Web3Provider>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </WagmiProvider>
+    </Web3Provider>
   </React.StrictMode>,
 )
