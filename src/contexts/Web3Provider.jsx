@@ -1,13 +1,11 @@
 // File: iwasthere/new-frontend/src/contexts/Web3Provider.jsx
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
-import { WagmiProvider as WagmiV2Provider } from 'wagmi' // Use the correct V2 provider
+import { WagmiProvider as WagmiV2Provider } from 'wagmi'
 import { polygon } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-// 1. Get project ID
 const projectId = '2d36d710dfc9facf39435ab85cac3c87';
 
-// 2. Create metadata
 const metadata = {
   name: 'Sentry by iwasthere.watch',
   description: 'On-Chain Monitoring and Alerts',
@@ -15,7 +13,6 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-// 3. Create wagmiConfig
 const chains = [polygon];
 const wagmiConfig = defaultWagmiConfig({
   chains,
@@ -23,20 +20,23 @@ const wagmiConfig = defaultWagmiConfig({
   metadata
 });
 
-// 4. Create modal
+// THIS IS THE FIX
 createWeb3Modal({
   wagmiConfig,
   projectId,
-  chains
+  chains,
+  // This tells the modal to use the redirect flow for desktop
+  desktopWallets: [{
+    id: 'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
+    name: 'MetaMask',
+    imageUrl: 'https://docs.walletconnect.com/assets/images/metamask-icon-01f2d3f23758a8a7c293ec5c4897f225.png'
+  }]
 });
 
-// 5. Setup QueryClient
 const queryClient = new QueryClient();
 
-// This is our correctly named wrapper component
 export function Web3Provider({ children }) {
   return (
-    // This is the OFFICIAL <WagmiProvider> from the wagmi library
     <WagmiV2Provider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         {children}
@@ -44,3 +44,4 @@ export function Web3Provider({ children }) {
     </WagmiV2Provider>
   );
 }
+
