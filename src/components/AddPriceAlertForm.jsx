@@ -1,7 +1,7 @@
 // File: iwasthere/new-frontend/src/components/AddPriceAlertForm.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import assetList from '../data/assetList.json'; // This line imports the asset list.
+import { Link } from 'react-router-dom'; // Import the Link component
+import assetList from '../data/assetList.json';
 import api from '../services/apiService';
 
 export default function AddPriceAlertForm({ onAlertCreated }) {
@@ -43,7 +43,6 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', alignItems: 'flex-end', marginBottom: '1rem' }}>
                     <div>
                         <label htmlFor="asset-choice">Asset</label>
-                        {/* This is the searchable input that uses the asset list */}
                         <input
                             list="asset-list"
                             id="asset-choice"
@@ -81,11 +80,16 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Setting Alert...' : 'Set Price Alert'}
                 </button>
+                {/* --- THIS IS THE FINAL LOGIC --- */}
                 {error && (
                     <div style={{ marginTop: '1rem', color: 'red' }}>
-                        <p>{error}</p>
+                        <p><strong>Error:</strong> {error}</p>
                         {error.includes('limit reached') && (
-                            <Link to="/upgrade"><button style={{ marginTop: '0.5rem' }}>Upgrade Now</button></Link>
+                            <Link to="/upgrade">
+                                <button style={{ marginTop: '0.5rem', cursor: 'pointer' }}>
+                                    Upgrade Plan
+                                </button>
+                            </Link>
                         )}
                     </div>
                 )}
@@ -93,3 +97,4 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         </div>
     );
 }
+

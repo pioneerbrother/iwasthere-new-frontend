@@ -1,3 +1,4 @@
+// File: iwasthere/new-frontend/src/pages/UpgradePage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createWalletClient, custom, parseUnits, createPublicClient, http } from 'viem';
@@ -17,12 +18,17 @@ export default function UpgradePage() {
     const navigate = useNavigate();
 
     const handleSubscription = async (tier, amount) => {
-        // ... (the handleSubscription function is correct and remains the same)
+        // ... (The handleSubscription function is correct and remains the same)
     };
 
     return (
         <div style={{ padding: '2rem', maxWidth: '800px', margin: 'auto' }}>
             <h1 style={{ textAlign: 'center' }}>Upgrade Your Plan (Test Mode)</h1>
+            <p style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                Payments are processed on the Polygon network using USDC.
+            </p>
+            
+            {/* --- THIS IS THE FIX --- */}
             <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginTop: '2rem' }}>
                 {/* Pro Tier Card */}
                 <div style={{ border: '1px solid #ccc', padding: '1.5rem', width: '300px', textAlign: 'center' }}>
@@ -31,17 +37,20 @@ export default function UpgradePage() {
                     <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0' }}>
                         <li>Up to 25 Total Rules</li>
                         <li>High-Speed Alerts</li>
+                        <li>Telegram Notifications</li>
                     </ul>
                     <button onClick={() => handleSubscription('PRO', 1)} disabled={isLoading}>
                         {isLoading ? 'Processing...' : 'Upgrade (1 USDC)'}
                     </button>
                 </div>
+
                 {/* Whale Tier Card */}
                 <div style={{ border: '1px solid #000', padding: '1.5rem', width: '300px', textAlign: 'center' }}>
                     <h2>Whale Tier</h2>
                     <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>$2 <span style={{ fontSize: '1rem' }}>/ month</span></p>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0' }}>
+                     <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0' }}>
                         <li>Unlimited Rules</li>
+                        <li>Institutional Speed</li>
                         <li>API & Webhook Access</li>
                     </ul>
                     <button onClick={() => handleSubscription('WHALE', 2)} disabled={isLoading}>
@@ -49,7 +58,8 @@ export default function UpgradePage() {
                     </button>
                 </div>
             </div>
-            {message && <p style={{ marginTop: '2rem', textAlign: 'center' }}><strong>Status:</strong> {message}</p>}
+
+            {message && <p style={{ marginTop: '2rem', textAlign: 'center', fontWeight: 'bold' }}>Status: {message}</p>}
         </div>
     );
 }
