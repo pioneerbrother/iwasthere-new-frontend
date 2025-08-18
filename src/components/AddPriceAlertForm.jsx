@@ -10,7 +10,7 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
     const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [limitReached, setLimitReached] = useState(false);
+    const [limitReached, setLimitReached] = useState(false); // The definitive state for the link
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,7 +21,7 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         }
         setIsLoading(true);
         setError('');
-        setLimitReached(false);
+        setLimitReached(false); // Reset on every new attempt
         try {
             const response = await api.post('/price-alerts', { assetId: selectedAsset.id, direction, value: parseFloat(value) });
             onAlertCreated(response.data);
@@ -30,6 +30,7 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Failed to create price alert.';
             setError(errorMessage);
+            // If the specific error occurs, set our boolean to true
             if (errorMessage.includes('limit reached')) {
                 setLimitReached(true);
             }
@@ -44,12 +45,17 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
             <form onSubmit={handleSubmit} noValidate>
                 {/* ... form inputs ... */}
                 <button type="submit" disabled={isLoading}>{isLoading ? 'Setting Alert...' : 'Set Price Alert'}</button>
+
+                {/* --- THIS IS THE FINAL FIX --- */}
                 {error && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
                 {limitReached && (
-                    <Link to="/upgrade"><button style={{ marginTop: '0.5rem' }}>Upgrade Plan</button></Link>
+                    <Link to="/upgrade">
+                        <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white' }}>
+                            Upgrade Plan
+                        </button>
+                    </Link>
                 )}
             </form>
         </div>
     );
 }
-
