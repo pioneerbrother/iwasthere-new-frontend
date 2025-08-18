@@ -23,7 +23,9 @@ export default function AddSentryForm({ onSentryCreated }) {
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Failed to create Sentry.';
             setError(errorMessage);
-            if (errorMessage.includes('limit reached')) {
+            // --- THIS IS THE ROBUST FIX ---
+            // We check for the 403 status code directly.
+            if (err.response?.status === 403) {
                 setLimitReached(true);
             }
         } finally {
@@ -38,16 +40,14 @@ export default function AddSentryForm({ onSentryCreated }) {
                 <input type="text" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} placeholder="0x..." required />
                 <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="e.g., Transfer" required />
                 <button type="submit" disabled={isLoading}>{isLoading ? 'Deploying...' : 'Deploy Sentry'}</button>
-                {error && !limitReached && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
+                {/* We now show the generic error and the upgrade link separately */}
+                {error && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
                 {limitReached && (
-                    <div style={{ marginTop: '1rem' }}>
-                        <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>
-                        <Link to="/upgrade">
-                            <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
-                                Upgrade Plan
-                            </button>
-                        </Link>
-                    </div>
+                    <Link to="/upgrade">
+                        <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
+                            Upgrade Plan
+                        </button>
+                    </Link>
                 )}
             </form>
         </div>
