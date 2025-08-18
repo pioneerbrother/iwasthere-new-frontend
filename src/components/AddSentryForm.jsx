@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import api from '../services/apiService';
 
 export default function AddSentryForm({ onSentryCreated }) {
-    const [contractAddress, setContractAddress] = useState('');
+    // --- THIS IS THE FIX ---
+    const [contractAddress, setContractAddress] = useState(''); // Corrected '=' sign
     const [eventName, setEventName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -23,8 +24,6 @@ export default function AddSentryForm({ onSentryCreated }) {
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Failed to create Sentry.';
             setError(errorMessage);
-            // --- THIS IS THE ROBUST FIX ---
-            // We check for the 403 status code directly.
             if (err.response?.status === 403) {
                 setLimitReached(true);
             }
@@ -40,14 +39,16 @@ export default function AddSentryForm({ onSentryCreated }) {
                 <input type="text" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} placeholder="0x..." required />
                 <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="e.g., Transfer" required />
                 <button type="submit" disabled={isLoading}>{isLoading ? 'Deploying...' : 'Deploy Sentry'}</button>
-                {/* We now show the generic error and the upgrade link separately */}
+                
                 {error && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
                 {limitReached && (
-                    <Link to="/upgrade">
-                        <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
-                            Upgrade Plan
-                        </button>
-                    </Link>
+                    <div style={{ marginTop: '1rem' }}>
+                        <Link to="/upgrade">
+                            <button style={{ cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
+                                Upgrade Plan
+                            </button>
+                        </Link>
+                    </div>
                 )}
             </form>
         </div>

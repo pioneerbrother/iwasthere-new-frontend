@@ -46,11 +46,13 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
                 <button type="submit" disabled={isLoading}>{isLoading ? 'Setting Alert...' : 'Set Price Alert'}</button>
                 {error && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
                 {limitReached && (
-                    <Link to="/upgrade">
-                        <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
-                            Upgrade Plan
-                        </button>
-                    </Link>
+                    <div style={{ marginTop: '1rem' }}>
+                        <Link to="/upgrade">
+                            <button style={{ cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
+                                Upgrade Plan
+                            </button>
+                        </Link>
+                    </div>
                 )}
             </form>
         </div>
