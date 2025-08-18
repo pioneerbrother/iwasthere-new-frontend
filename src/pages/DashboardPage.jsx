@@ -1,13 +1,13 @@
-// File: iwasthere/new-frontend/src/pages/DashboardPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/apiService';
-
 import AddSentryForm from '../components/AddSentryForm.jsx';
 import SentryList from '../components/SentryList.jsx';
 import AddPriceAlertForm from '../components/AddPriceAlertForm.jsx';
-import PriceAlertList from '../components/PriceAlertList.jsx'; // We'll create this
+import PriceAlertList from '../components/PriceAlertList.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
-function DashboardPage() {
+export default function DashboardPage() {
+    const { signOut } = useAuth();
     const [sentries, setSentries] = useState([]);
     const [priceAlerts, setPriceAlerts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -34,30 +34,22 @@ function DashboardPage() {
         fetchAllRules();
     }, [fetchAllRules]);
 
-    const handleSentryCreated = (newSentry) => {
-        setSentries(prev => [newSentry, ...prev]);
-    };
-    
-    const handlePriceAlertCreated = (newAlert) => {
-        setPriceAlerts(prev => [newAlert, ...prev]);
-    };
+    const handleSentryCreated = (newSentry) => setSentries(prev => [newSentry, ...prev]);
+    const handlePriceAlertCreated = (newAlert) => setPriceAlerts(prev => [newAlert, ...prev]);
 
     return (
-        <div className="p-8 max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold">Sentry Command Center</h1>
-            
+        <div style={{ padding: '2rem', maxWidth: '900px', margin: 'auto' }}>
+            <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1>Sentry Command Center</h1>
+                <button onClick={signOut}>Sign Out</button>
+            </nav>
             <AddSentryForm onSentryCreated={handleSentryCreated} />
             <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
-
-            <hr className="my-8" />
-
-            <h2 className="text-3xl font-bold">Your Active Rules</h2>
+            <hr style={{ margin: '2rem 0' }} />
+            <h2>Your Active Rules</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            
             <SentryList sentries={sentries} isLoading={isLoading} />
             <PriceAlertList alerts={priceAlerts} isLoading={isLoading} />
         </div>
     );
 }
-
-export default DashboardPage;
