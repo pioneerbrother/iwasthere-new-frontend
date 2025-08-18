@@ -1,3 +1,4 @@
+// File: iwasthere/new-frontend/src/components/PriceAlertList.jsx
 import React from 'react';
 
 export default function PriceAlertList({ alerts, isLoading }) {
