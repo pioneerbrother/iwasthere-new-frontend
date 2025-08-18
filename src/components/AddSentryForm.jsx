@@ -1,6 +1,6 @@
 // File: iwasthere/new-frontend/src/components/AddSentryForm.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import the Link component
+import { Link } from 'react-router-dom'; // Import the Link component for navigation
 import api from '../services/apiService';
 
 export default function AddSentryForm({ onSentryCreated }) {
@@ -27,7 +27,7 @@ export default function AddSentryForm({ onSentryCreated }) {
     };
 
     return (
-        <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #555' }}>
+        <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
             <h2>Add New Sentry</h2>
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '1rem' }}>
@@ -38,7 +38,7 @@ export default function AddSentryForm({ onSentryCreated }) {
                         onChange={(e) => setContractAddress(e.target.value)}
                         placeholder="0x..."
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1rem' }}>
@@ -49,7 +49,7 @@ export default function AddSentryForm({ onSentryCreated }) {
                         onChange={(e) => setEventName(e.target.value)}
                         placeholder="e.g., Transfer"
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                     />
                 </div>
                 
@@ -57,7 +57,7 @@ export default function AddSentryForm({ onSentryCreated }) {
                     {isLoading ? 'Deploying...' : 'Deploy Sentry'}
                 </button>
 
-                {/* --- THIS IS THE FIX --- */}
+                {/* --- THIS IS THE FINAL LOGIC --- */}
                 {/* If there is an error message, display it. */}
                 {error && (
                     <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid red', color: 'red' }}>
@@ -65,7 +65,9 @@ export default function AddSentryForm({ onSentryCreated }) {
                         {/* If the error is the specific "limit reached" message, show the Upgrade button. */}
                         {error.includes('limit reached') && (
                             <Link to="/upgrade">
-                                <button style={{ marginTop: '0.5rem' }}>Upgrade Now</button>
+                                <button style={{ marginTop: '0.5rem', cursor: 'pointer' }}>
+                                    Upgrade to Pro
+                                </button>
                             </Link>
                         )}
                     </div>
