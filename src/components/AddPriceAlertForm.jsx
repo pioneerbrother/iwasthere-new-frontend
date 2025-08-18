@@ -10,7 +10,7 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
     const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [limitReached, setLimitReached] = useState(false); // The definitive state for the link
+    const [limitReached, setLimitReached] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,7 +21,7 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         }
         setIsLoading(true);
         setError('');
-        setLimitReached(false); // Reset on every new attempt
+        setLimitReached(false);
         try {
             const response = await api.post('/price-alerts', { assetId: selectedAsset.id, direction, value: parseFloat(value) });
             onAlertCreated(response.data);
@@ -30,7 +30,6 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Failed to create price alert.';
             setError(errorMessage);
-            // If the specific error occurs, set our boolean to true
             if (errorMessage.includes('limit reached')) {
                 setLimitReached(true);
             }
@@ -43,17 +42,18 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem' }}>
             <h2>Add New Price Alert</h2>
             <form onSubmit={handleSubmit} noValidate>
-                {/* ... form inputs ... */}
+                {/* ... your form inputs here ... */}
                 <button type="submit" disabled={isLoading}>{isLoading ? 'Setting Alert...' : 'Set Price Alert'}</button>
-
-                {/* --- THIS IS THE FINAL FIX --- */}
-                {error && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
+                {error && !limitReached && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
                 {limitReached && (
-                    <Link to="/upgrade">
-                        <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white' }}>
-                            Upgrade Plan
-                        </button>
-                    </Link>
+                    <div style={{ marginTop: '1rem' }}>
+                        <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>
+                        <Link to="/upgrade">
+                            <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
+                                Upgrade Plan
+                            </button>
+                        </Link>
+                    </div>
                 )}
             </form>
         </div>

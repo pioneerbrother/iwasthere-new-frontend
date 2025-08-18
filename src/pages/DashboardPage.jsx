@@ -22,20 +22,10 @@ export default function DashboardPage() {
                 api.get('/sentries'),
                 api.get('/price-alerts')
             ]);
-            
-            if (results[0].status === 'fulfilled') {
-                setSentries(results[0].value.data.sentries || []);
-            } else {
-                setFetchError('Could not load your on-chain sentries.');
-            }
-            
-            if (results[1].status === 'fulfilled') {
-                setPriceAlerts(results[1].value.data.alerts || []);
-            } else {
-                setFetchError(prev => prev ? `${prev} And could not load price alerts.` : 'Could not load your price alerts.');
-            }
+            if (results[0].status === 'fulfilled') setSentries(results[0].value.data.sentries || []);
+            if (results[1].status === 'fulfilled') setPriceAlerts(results[1].value.data.alerts || []);
         } catch (err) {
-            setFetchError('A network error occurred while loading your rules.');
+            setFetchError('A network error occurred.');
         } finally {
             setIsLoading(false);
         }
