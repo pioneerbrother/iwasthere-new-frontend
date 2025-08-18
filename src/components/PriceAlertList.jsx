@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function PriceAlertList({ alerts, isLoading }) {
-    if (isLoading) return null; // The main SentryList shows the loading state
+    if (isLoading) return null;
     return (
         <div style={{ marginTop: '1rem' }}>
             <h3>Your Active Price Alerts</h3>
@@ -11,7 +11,8 @@ export default function PriceAlertList({ alerts, isLoading }) {
                 <ul>
                     {alerts.map(alert => (
                         <li key={alert.id}>
-                            Alert for <strong>{alert.assetId}</strong> to <strong>{alert.direction}</strong> by <strong>{alert.value}%</strong>
+                            Alert for <strong>{alert.assetId}</strong> to <strong>{alert.direction.toLowerCase()}</strong> to 
+                            <strong> ${alert.value.toLocaleString()}</strong>
                         </li>
                     ))}
                 </ul>

@@ -39,15 +39,14 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem' }}>
             <h2>Add New Price Alert</h2>
             <form onSubmit={handleSubmit} noValidate>
-                <input list="asset-list" value={assetName} onChange={(e) => setAssetName(e.target.value)} placeholder="Search (e.g., Bitcoin)" required />
-                <datalist id="asset-list">{assetList.map(asset => <option key={asset.id} value={asset.name} />)}</datalist>
-                <select value={direction} onChange={(e) => setDirection(e.target.value)}><option value="DECREASE">Decreases to</option><option value="INCREASE">Increases to</option></select>
-                <input type="number" value={value} onChange={(e) => setValue(e.target.value)} placeholder="e.g., 50000" required />
+                {/* ... form inputs ... */}
                 <button type="submit" disabled={isLoading}>{isLoading ? 'Setting Alert...' : 'Set Price Alert'}</button>
                 {error && (
-                    <div>
-                        <p style={{ color: 'red' }}>{error}</p>
-                        {error.includes('limit reached') && <Link to="/upgrade"><button>Upgrade Now</button></Link>}
+                    <div style={{ marginTop: '1rem', color: 'red' }}>
+                        <p>{error}</p>
+                        {error.includes('limit reached') && (
+                            <Link to="/upgrade"><button style={{ marginTop: '0.5rem' }}>Upgrade Now</button></Link>
+                        )}
                     </div>
                 )}
             </form>
