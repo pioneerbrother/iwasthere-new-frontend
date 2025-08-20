@@ -1,70 +1,120 @@
-// File: new-frontend/src/pages/ProfilePage.jsx
+// File: iwasthere/new-frontend/src/pages/ProfilePage.jsx
+import React, { useState, useEffect, useCallback } from 'react';
+import api from '../services/apiService';
+import { useAuth } from '../contexts/AuthContext.jsx';
+// We will need viem for the credit purchase transaction
+import { createWalletClient, custom, parseUnits, createPublicClient, http } from 'viem';
+import { polygon } from 'viem/chains';
+import usdcAbi from '../usdcAbi.json';
+import testTreasuryAbi from '../testTreasuryAbi.json';
 
-import React, { useState } from 'react';
-import api from '../services/apiService'; // Our configured axios instance
+const TEST_TREASURY_ADDRESS = '0xF5F80D53b62a6f4173Ea826E0DB7707E3979B749';
+const USDC_CONTRACT_ADDRESS = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 
-function ProfilePage() {
+const publicClient = createPublicClient({ chain: polygon, transport: http() });
+
+export default function ProfilePage() {
+    const { user } = useAuth(); // Get user info from our AuthContext
+    const [profile, setProfile] = useState(null);
     const [email, setEmail] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [phone, setPhone] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [message, setMessage] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    // Fetch the user's full profile from our database
+    const fetchProfile = useCallback(async () => {
         setIsLoading(true);
-        setError('');
-        setSuccessMessage('');
-
         try {
-            // Send the update command to our secure back-end endpoint
-            const response = await api.post('/user/profile', { email });
-            setSuccessMessage(response.data.message || 'Profile updated successfully!');
+            const { data } = await api.get('/user/profile');
+            setProfile(data);
+            setEmail(data.email || '');
+            setPhone(data.phone || '');
+        } catch (error) {
+            setMessage('Error: Could not load your profile.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
+
+    const handleProfileUpdate = async (e) => {
+        e.preventDefault();
+        setMessage('Saving...');
+        try {
+            const { data } = await api.post('/user/profile', { email, phone });
+            setMessage('Profile updated successfully!');
+            setProfile(data.user); // Update local state with the new profile
+        } catch (error) {
+            setMessage('Error: Failed to update profile.');
+        }
+    };
+
+    const handlePurchaseCredits = async () => {
+        setIsLoading(true);
+        setMessage('Initiating credit purchase...');
+        try {
+            const walletClient = createWalletClient({ chain: polygon, transport: custom(window.ethereum) });
+            const [account] = await walletClient.requestAddresses();
+            const amountInSmallestUnit = parseUnits("5", 6); // 5 USDC for 100 credits
+
+            setMessage('Please approve USDC spending...');
+            const approveHash = await walletClient.writeContract({ /* ...approve logic... */ });
+            await publicClient.waitForTransactionReceipt({ hash: approveHash });
+
+            setMessage('Please confirm payment...');
+            const payHash = await walletClient.writeContract({ /* ...pay logic... */ });
+            await publicClient.waitForTransactionReceipt({ hash: payHash });
+
+            setMessage('Verifying payment and adding credits...');
+            await api.post('/credits/purchase', { transactionHash: payHash, creditAmount: 100 });
+            
+            setMessage('Success! 100 Alert Credits added.');
+            fetchProfile(); // Refresh profile to show new credit balance
         } catch (err) {
-            setError(err.response?.data?.error || 'An unexpected error occurred. Please try again.');
+            setMessage(`Error: ${err.shortMessage || err.message}`);
         } finally {
             setIsLoading(false);
         }
     };
 
+    if (isLoading) {
+        return <div>Loading your profile...</div>;
+    }
+
     return (
-        <div className="p-8 max-w-2xl mx-auto">
-            <h1 className="text-4xl font-bold text-gray-900 mb-8">Your Profile</h1>
-
-            <div className="bg-white shadow-md rounded-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Notification Settings</h2>
-                <p className="text-gray-600 mb-6">
-                    This is the email address where your Sentry alerts will be sent.
-                </p>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-                            Email Address
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="you@example.com"
-                            required
-                        />
+        <div style={{ padding: '2rem' }}>
+            <h1>Your Profile</h1>
+            
+            {/* Notification Settings */}
+            <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem' }}>
+                <h2>Notification Settings</h2>
+                <form onSubmit={handleProfileUpdate}>
+                    <div>
+                        <label>Email Address</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-blue-400"
-                    >
-                        {isLoading ? 'Saving...' : 'Save Settings'}
-                    </button>
-
-                    {error && <p className="mt-4 text-center text-red-500 text-sm">{error}</p>}
-                    {successMessage && <p className="mt-4 text-center text-green-500 text-sm">{successMessage}</p>}
+                    <div style={{ marginTop: '1rem' }}>
+                        <label>Phone Number (for SMS alerts, include country code e.g., +1)</label>
+                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    </div>
+                    <button type="submit" style={{ marginTop: '1rem' }}>Save Settings</button>
                 </form>
             </div>
+
+            {/* Alert Credits */}
+            <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem' }}>
+                <h2>Alert Credits</h2>
+                <p>Your current balance: <strong>{profile?.alertCredits || 0} credits</strong></p>
+                <p>Purchase credits to receive premium SMS alerts. Each SMS costs 1 credit.</p>
+                <button onClick={handlePurchaseCredits} disabled={isLoading}>
+                    {isLoading ? 'Processing...' : 'Buy 100 Credits (5 USDC)'}
+                </button>
+            </div>
+
+            {message && <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>Status: {message}</p>}
         </div>
     );
 }
-
-export default ProfilePage;
