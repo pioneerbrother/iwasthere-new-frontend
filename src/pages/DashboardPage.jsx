@@ -15,6 +15,7 @@ export default function DashboardPage() {
     const [fetchError, setFetchError] = useState('');
 
     const fetchAllRules = useCallback(async () => {
+        // ... (This data fetching logic is correct and remains the same)
         setIsLoading(true);
         setFetchError('');
         try {
@@ -45,8 +46,25 @@ export default function DashboardPage() {
                 <button onClick={signOut}>Sign Out</button>
             </nav>
             <main style={{ marginTop: '2rem' }}>
-                <AddSentryForm onSentryCreated={handleSentryCreated} />
-                <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
+
+                {/* --- THIS IS THE UPGRADED SENTRY SECTION --- */}
+                <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
+                    <h2>Add New Sentry</h2>
+                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '-5px', marginBottom: '1rem' }}>
+                        A Sentry monitors a specific smart contract for on-chain events, like a token transfer or NFT sale.
+                    </p>
+                    <AddSentryForm onSentryCreated={handleSentryCreated} />
+                </div>
+
+                {/* --- THIS IS THE UPGRADED PRICE ALERT SECTION --- */}
+                <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '2rem' }}>
+                    <h2>Add New Price Alert</h2>
+                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '-5px', marginBottom: '1rem' }}>
+                        A Price Alert monitors an asset and notifies you when it crosses a specific USD value.
+                    </p>
+                    <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
+                </div>
+
                 <hr style={{ margin: '2rem 0' }} />
                 <h2>Your Active Rules</h2>
                 {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
