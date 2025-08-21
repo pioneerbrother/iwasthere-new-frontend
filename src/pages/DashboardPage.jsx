@@ -15,7 +15,6 @@ export default function DashboardPage() {
     const [fetchError, setFetchError] = useState('');
 
     const fetchAllRules = useCallback(async () => {
-        // ... (This data fetching logic is correct and remains the same)
         setIsLoading(true);
         setFetchError('');
         try {
@@ -47,23 +46,25 @@ export default function DashboardPage() {
             </nav>
             <main style={{ marginTop: '2rem' }}>
 
-                {/* --- THIS IS THE UPGRADED SENTRY SECTION --- */}
-                <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
-                    <h2>Add New Sentry</h2>
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '-5px', marginBottom: '1rem' }}>
+                {/* --- THIS IS THE CORRECTED LAYOUT --- */}
+                <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '2rem' }}>
+                    <h2 style={{marginTop: 0}}>Add New Sentry</h2>
+                    <p style={{ fontSize: '0.9rem', color: '#666' }}>
                         A Sentry monitors a specific smart contract for on-chain events, like a token transfer or NFT sale.
                     </p>
+                    {/* The form is now a direct child of the main element */}
                     <AddSentryForm onSentryCreated={handleSentryCreated} />
                 </div>
 
-                {/* --- THIS IS THE UPGRADED PRICE ALERT SECTION --- */}
-                <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '2rem' }}>
-                    <h2>Add New Price Alert</h2>
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '-5px', marginBottom: '1rem' }}>
+                <div style={{ border: '1px solid #ccc', padding: '1rem' }}>
+                    <h2 style={{marginTop: 0}}>Add New Price Alert</h2>
+                    <p style={{ fontSize: '0.9rem', color: '#666' }}>
                         A Price Alert monitors an asset and notifies you when it crosses a specific USD value.
                     </p>
+                    {/* The form is now a direct child of the main element */}
                     <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
                 </div>
+
 
                 <hr style={{ margin: '2rem 0' }} />
                 <h2>Your Active Rules</h2>
