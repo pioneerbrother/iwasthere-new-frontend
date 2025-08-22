@@ -1,3 +1,4 @@
+// File: iwasthere/new-frontend/src/components/AddPriceAlertForm.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import assetList from '../data/assetList.json';
@@ -29,7 +30,9 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Failed to create price alert.';
             setError(errorMessage);
-            if (err.response?.status === 403) setLimitReached(true);
+            if (err.response?.status === 403) {
+                setLimitReached(true);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -43,7 +46,13 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
             <input type="number" value={value} onChange={(e) => setValue(e.target.value)} placeholder="e.g., 50000" required style={{ marginLeft: '0.5rem' }}/>
             <button type="submit" disabled={isLoading} style={{ marginLeft: '0.5rem' }}>{isLoading ? '...' : 'Set Price Alert'}</button>
             {error && <p style={{ color: 'red', marginTop: '0.5rem' }}>{error}</p>}
-            {limitReached && <Link to="/upgrade"><button style={{ marginTop: '0.5rem' }}>Upgrade Plan</button></Link>}
+            {limitReached && (
+                <Link to="/upgrade">
+                    <button style={{ display: 'block', marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
+                        Upgrade Plan
+                    </button>
+                </Link>
+            )}
         </form>
     );
 }
