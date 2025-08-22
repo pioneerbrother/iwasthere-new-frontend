@@ -1,4 +1,3 @@
-// File: iwasthere/new-frontend/src/components/AddSentryForm.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/apiService';
@@ -36,13 +35,16 @@ export default function AddSentryForm({ onSentryCreated }) {
             <input type="text" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} placeholder="0x..." required />
             <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="e.g., Transfer" required style={{ marginLeft: '0.5rem' }}/>
             <button type="submit" disabled={isLoading} style={{ marginLeft: '0.5rem' }}>{isLoading ? '...' : 'Deploy Sentry'}</button>
-            {error && <p style={{ color: 'red', marginTop: '0.5rem' }}>{error}</p>}
+            {error && !limitReached && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
             {limitReached && (
-                <Link to="/upgrade">
-                    <button style={{ display: 'block', marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
-                        Upgrade Plan
-                    </button>
-                </Link>
+                <div style={{ marginTop: '1rem' }}>
+                    <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>
+                    <Link to="/upgrade">
+                        <button style={{ marginTop: '0.5rem', cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
+                            Upgrade Plan
+                        </button>
+                    </Link>
+                </div>
             )}
         </form>
     );

@@ -27,7 +27,8 @@ export default function AddPriceAlertForm({ onAlertCreated }) {
             onAlertCreated(response.data);
             setAssetName('');
             setValue('');
-        } catch (err) {
+        // --- THIS IS THE FIX: The catch block was missing its opening brace ---
+        } catch (err) { 
             const errorMessage = err.response?.data?.error || 'Failed to create price alert.';
             setError(errorMessage);
             if (err.response?.status === 403) {

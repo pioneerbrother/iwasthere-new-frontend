@@ -1,4 +1,3 @@
-// File: iwasthere/new-frontend/src/components/SentryList.jsx
 import React from 'react';
 
 const formatAddress = (address) => {
