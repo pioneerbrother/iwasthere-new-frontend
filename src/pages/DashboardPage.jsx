@@ -1,4 +1,3 @@
-// File: iwasthere/new-frontend/src/pages/DashboardPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import api from '../services/apiService';
@@ -40,38 +39,24 @@ export default function DashboardPage() {
 
     return (
         <div style={{ padding: '2rem', maxWidth: '900px', margin: 'auto' }}>
-            <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ borderBottom: '1px solid #eee', paddingBottom: '1rem', marginBottom: '1rem' }}>
                 <h1>Sentry Command Center</h1>
-                <button onClick={signOut}>Sign Out</button>
-            </nav>
-            <main style={{ marginTop: '2rem' }}>
-
-                {/* --- THIS IS THE CORRECTED LAYOUT --- */}
-                <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '2rem' }}>
-                    <h2 style={{marginTop: 0}}>Add New Sentry</h2>
-                    <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                        A Sentry monitors a specific smart contract for on-chain events, like a token transfer or NFT sale.
-                    </p>
-                    {/* The form is now a direct child of the main element */}
-                    <AddSentryForm onSentryCreated={handleSentryCreated} />
-                </div>
-
-                <div style={{ border: '1px solid #ccc', padding: '1rem' }}>
-                    <h2 style={{marginTop: 0}}>Add New Price Alert</h2>
-                    <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                        A Price Alert monitors an asset and notifies you when it crosses a specific USD value.
-                    </p>
-                    {/* The form is now a direct child of the main element */}
-                    <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
-                </div>
-
-
-                <hr style={{ margin: '2rem 0' }} />
-                <h2>Your Active Rules</h2>
-                {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
-                <SentryList sentries={sentries} isLoading={isLoading} />
-                <PriceAlertList alerts={priceAlerts} isLoading={isLoading} />
-            </main>
+            </div>
+            <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '2rem' }}>
+                <h2 style={{marginTop: 0}}>Add New Sentry</h2>
+                <p style={{ fontSize: '0.9rem', color: '#666' }}>A Sentry monitors a specific smart contract for on-chain events.</p>
+                <AddSentryForm onSentryCreated={handleSentryCreated} />
+            </div>
+            <div style={{ border: '1px solid #ccc', padding: '1rem' }}>
+                <h2 style={{marginTop: 0}}>Add New Price Alert</h2>
+                <p style={{ fontSize: '0.9rem', color: '#666' }}>A Price Alert monitors an asset and notifies you when it crosses a specific USD value.</p>
+                <AddPriceAlertForm onAlertCreated={handlePriceAlertCreated} />
+            </div>
+            <hr style={{ margin: '2rem 0' }} />
+            <h2>Your Active Rules</h2>
+            {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
+            <SentryList sentries={sentries} isLoading={isLoading} />
+            <PriceAlertList alerts={priceAlerts} isLoading={isLoading} />
         </div>
     );
 }
