@@ -1,18 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext.jsx';
 import api from '../services/apiService';
 import AddSentryForm from '../components/AddSentryForm.jsx';
 import SentryList from '../components/SentryList.jsx';
 import AddPriceAlertForm from '../components/AddPriceAlertForm.jsx';
 import PriceAlertList from '../components/PriceAlertList.jsx';
-
 export default function DashboardPage() {
-    const { signOut } = useAuth();
     const [sentries, setSentries] = useState([]);
     const [priceAlerts, setPriceAlerts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [fetchError, setFetchError] = useState('');
-
     const fetchAllRules = useCallback(async () => {
         setIsLoading(true);
         setFetchError('');
@@ -29,14 +25,11 @@ export default function DashboardPage() {
             setIsLoading(false);
         }
     }, []);
-
     useEffect(() => {
         fetchAllRules();
     }, [fetchAllRules]);
-
     const handleSentryCreated = (newSentry) => setSentries(prev => [newSentry, ...prev]);
     const handlePriceAlertCreated = (newAlert) => setPriceAlerts(prev => [newAlert, ...prev]);
-
     return (
         <div style={{ padding: '2rem', maxWidth: '900px', margin: 'auto' }}>
             <div style={{ borderBottom: '1px solid #eee', paddingBottom: '1rem', marginBottom: '1rem' }}>
@@ -60,3 +53,4 @@ export default function DashboardPage() {
         </div>
     );
 }
+
