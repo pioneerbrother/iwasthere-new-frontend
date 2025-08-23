@@ -4,10 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { createWalletClient, custom, parseUnits, createPublicClient, http } from 'viem';
 import { polygon } from 'viem/chains';
 import api from '../services/apiService';
-import usdcAbi from '../usdcAbi.json'; // Assumes this file exists in src/
-import testTreasuryAbi from '../testTreasuryAbi.json'; // Assumes this file exists in src/
+import usdcAbi from '../usdcAbi.json';
+import testTreasuryAbi from '../testTreasuryAbi.json';
 
-// --- CONFIGURATION ---
 const TEST_TREASURY_ADDRESS = '0xF5F80D53b62a6f4173Ea826E0DB7707E3979B749';
 const USDC_CONTRACT_ADDRESS = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 
@@ -68,17 +67,28 @@ export default function UpgradePage() {
     return (
         <div style={{ padding: '2rem', maxWidth: '800px', margin: 'auto' }}>
             <h1 style={{ textAlign: 'center' }}>Upgrade Your Plan (Test Mode)</h1>
+            <p style={{ textAlign: 'center', marginBottom: '2rem' }}>Payments are processed on the Polygon network using USDC.</p>
             <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginTop: '2rem' }}>
                 <div style={{ border: '1px solid #ccc', padding: '1.5rem', width: '300px', textAlign: 'center' }}>
                     <h2>Pro Tier</h2>
-                    <p>$1 / month</p>
+                    <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>$1 <span style={{ fontSize: '1rem' }}>/ month</span></p>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0' }}>
+                        <li>Up to 25 Total Rules</li>
+                        <li>High-Speed Alerts</li>
+                        <li>Telegram Notifications</li>
+                    </ul>
                     <button onClick={() => handleSubscription('PRO', 1)} disabled={isLoading}>
                         {isLoading ? 'Processing...' : 'Upgrade (1 USDC)'}
                     </button>
                 </div>
                 <div style={{ border: '1px solid #000', padding: '1.5rem', width: '300px', textAlign: 'center' }}>
                     <h2>Whale Tier</h2>
-                    <p>$2 / month</p>
+                    <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>$2 <span style={{ fontSize: '1rem' }}>/ month</span></p>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0' }}>
+                        <li>Unlimited Rules</li>
+                        <li>Institutional Speed</li>
+                        <li>API & Webhook Access</li>
+                    </ul>
                     <button onClick={() => handleSubscription('WHALE', 2)} disabled={isLoading}>
                         {isLoading ? 'Processing...' : 'Upgrade (2 USDC)'}
                     </button>
