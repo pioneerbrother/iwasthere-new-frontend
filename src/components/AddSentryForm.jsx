@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/apiService';
 
 export default function AddSentryForm({ onSentryCreated }) {
-    // --- THIS IS THE FIX ---
-    const [contractAddress, setContractAddress] = useState(''); // Corrected '=' sign
+    const [contractAddress, setContractAddress] = useState('');
     const [eventName, setEventName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -33,24 +32,20 @@ export default function AddSentryForm({ onSentryCreated }) {
     };
 
     return (
-        <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
-            <h2>Add New Sentry</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="text" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} placeholder="0x..." required />
-                <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="e.g., Transfer" required />
-                <button type="submit" disabled={isLoading}>{isLoading ? 'Deploying...' : 'Deploy Sentry'}</button>
-                
-                {error && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
-                {limitReached && (
-                    <div style={{ marginTop: '1rem' }}>
-                        <Link to="/upgrade">
-                            <button style={{ cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
-                                Upgrade Plan
-                            </button>
-                        </Link>
-                    </div>
-                )}
-            </form>
-        </div>
+        <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
+            <input type="text" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} placeholder="0x..." required />
+            <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="e.g., Transfer" required style={{ marginLeft: '0.5rem' }}/>
+            <button type="submit" disabled={isLoading} style={{ marginLeft: '0.5rem' }}>{isLoading ? '...' : 'Deploy Sentry'}</button>
+            {error && <p style={{ color: 'red', marginTop: '1rem' }}><strong>Error:</strong> {error}</p>}
+            {limitReached && (
+                <div style={{ marginTop: '1rem' }}>
+                    <Link to="/upgrade">
+                        <button style={{ cursor: 'pointer', background: 'green', color: 'white', border: 'none', padding: '10px 15px' }}>
+                            Upgrade Plan
+                        </button>
+                    </Link>
+                </div>
+            )}
+        </form>
     );
 }
