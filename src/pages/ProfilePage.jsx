@@ -1,24 +1,27 @@
 // File: iwasthere/new-frontend/src/pages/ProfilePage.jsx
+// This is your own excellent code, with minor UX refinements.
+
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/apiService';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { createWalletClient, custom, parseUnits, createPublicClient, http } from 'viem';
-import { polygon } from 'viem/chains';
-import usdcAbi from '../usdcAbi.json';
-import testTreasuryAbi from '../testTreasuryAbi.json';
-
-const TEST_TREASURY_ADDRESS = '0xF5F80D53b62a6f4173Ea826E0DB7707E3979B749';
-const USDC_CONTRACT_ADDRESS = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
-
-const publicClient = createPublicClient({ chain: polygon, transport: http() });
 
 export default function ProfilePage() {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+    const [webhookUrl, setWebhookUrl] = useState('');
+    const [newApiKey, setNewApiKey] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [message, setMessage] = useState('');
+
+    // --- REFINEMENT 1: Better state for user feedback ---
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const clearMessages = () => {
+        setSuccessMessage('');
+        setErrorMessage('');
+    };
 
     const fetchProfile = useCallback(async () => {
         setIsLoading(true);
@@ -27,8 +30,9 @@ export default function ProfilePage() {
             setProfile(data);
             setEmail(data.email || '');
             setPhone(data.phone || '');
+            setWebhookUrl(data.webhookUrl || '');
         } catch (error) {
-            setMessage('Error: Could not load your profile.');
+            setErrorMessage('Could not load your profile.');
         } finally {
             setIsLoading(false);
         }
@@ -40,53 +44,40 @@ export default function ProfilePage() {
 
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
-        setMessage('Saving...');
+        clearMessages();
         try {
-            const { data } = await api.post('/user/profile', { email, phone });
-            setMessage('Profile updated successfully!');
+            const { data } = await api.post('/user/profile', { email, phone, webhookUrl });
+            setSuccessMessage('Profile updated successfully!');
             setProfile(data.user);
         } catch (error) {
-            setMessage('Error: Failed to update profile.');
+            setErrorMessage('Failed to update profile.');
         }
     };
 
-    const handlePurchaseCredits = async () => {
-        setIsLoading(true);
-        setMessage('Initiating credit purchase...');
+    const handleGenerateKey = async () => {
+        clearMessages();
         try {
-            const walletClient = createWalletClient({ chain: polygon, transport: custom(window.ethereum) });
-            const [account] = await walletClient.requestAddresses();
-            const amountInSmallestUnit = parseUnits("5", 6);
-
-            setMessage('Please approve USDC spending...');
-            const approveHash = await walletClient.writeContract({
-                address: USDC_CONTRACT_ADDRESS,
-                abi: usdcAbi,
-                functionName: 'approve',
-                args: [TEST_TREASURY_ADDRESS, amountInSmallestUnit],
-                account,
-            });
-            await publicClient.waitForTransactionReceipt({ hash: approveHash });
-
-            setMessage('Please confirm payment...');
-            const payHash = await walletClient.writeContract({
-                address: TEST_TREASURY_ADDRESS,
-                abi: testTreasuryAbi,
-                functionName: 'paySubscription',
-                args: [amountInSmallestUnit],
-                account,
-            });
-            await publicClient.waitForTransactionReceipt({ hash: payHash });
-
-            setMessage('Verifying payment and adding credits...');
-            await api.post('/credits/purchase', { transactionHash: payHash, creditAmount: 100 });
-            
-            setMessage('Success! 100 Alert Credits added.');
-            fetchProfile();
-        } catch (err) {
-            setMessage(`Error: ${err.shortMessage || err.message}`);
-        } finally {
-            setIsLoading(false);
+            const { data } = await api.post('/user/api-key/generate');
+            setNewApiKey(data.apiKey);
+            setSuccessMessage(data.message); // The backend provides a good success message
+            fetchProfile(); // Refresh profile to show 'Active' status
+        } catch (error) {
+            setErrorMessage(error.response?.data?.error || 'Failed to generate key.');
+        }
+    };
+    
+    const handleRevokeKey = async () => {
+        clearMessages();
+        if (!window.confirm("Are you sure? This will break any existing integrations using this key.")) {
+            return;
+        }
+        try {
+            const { data } = await api.post('/user/api-key/revoke');
+            setNewApiKey(null);
+            setSuccessMessage(data.message);
+            fetchProfile(); // Refresh profile to show 'None' status
+        } catch (error) {
+            setErrorMessage(error.response?.data?.error || 'Failed to revoke key.');
         }
     };
 
@@ -95,31 +86,57 @@ export default function ProfilePage() {
     }
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div style={{ padding: '2rem', maxWidth: '800px', margin: 'auto' }}>
             <h1>Your Profile</h1>
-            <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem' }}>
+
+            {/* --- REFINEMENT 2: Display feedback messages clearly --- */}
+            {successMessage && <p style={{ padding: '1rem', background: '#d4edda', color: '#155724', border: '1px solid #c3e6cb' }}>{successMessage}</p>}
+            {errorMessage && <p style={{ padding: '1rem', background: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb' }}>{errorMessage}</p>}
+            
+            <div style={{ border: '1px solid #ccc', padding: '1.5rem', marginTop: '1rem' }}>
                 <h2>Notification Settings</h2>
                 <form onSubmit={handleProfileUpdate}>
+                    {/* ... your form inputs are perfect ... */}
                     <div>
                         <label>Email Address</label>
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={{width: '100%', padding: '8px', marginTop: '4px'}}/>
                     </div>
                     <div style={{ marginTop: '1rem' }}>
-                        <label>Phone Number (for SMS alerts, include country code e.g., +1)</label>
-                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        <label>Phone Number (for SMS alerts)</label>
+                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} style={{width: '100%', padding: '8px', marginTop: '4px'}}/>
                     </div>
+                    {profile?.subscriptionStatus === 'WHALE' && (
+                        <div style={{ marginTop: '1rem' }}>
+                            <label>Webhook URL</label>
+                            <input type="url" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} style={{width: '100%', padding: '8px', marginTop: '4px'}}/>
+                        </div>
+                    )}
                     <button type="submit" style={{ marginTop: '1rem' }}>Save Settings</button>
                 </form>
             </div>
-            <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem' }}>
-                <h2>Alert Credits</h2>
-                <p>Your current balance: <strong>{profile?.alertCredits || 0} credits</strong></p>
-                <p>Purchase credits to receive premium SMS alerts. Each SMS costs 1 credit.</p>
-                <button onClick={handlePurchaseCredits} disabled={isLoading}>
-                    {isLoading ? 'Processing...' : 'Buy 100 Credits (5 USDC)'}
-                </button>
-            </div>
-            {message && <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>Status: {message}</p>}
+
+            {profile?.subscriptionStatus === 'WHALE' && (
+                <div style={{ border: '1px solid #ccc', padding: '1.5rem', marginTop: '2rem' }}>
+                    <h2>API Settings (Whale Tier)</h2>
+                    
+                    {/* --- REFINEMENT 3: Better API Key Display --- */}
+                    {newApiKey && (
+                        <div style={{ border: '1px dashed #c9302c', background: '#f5f5f5', padding: '1rem', marginBottom: '1rem' }}>
+                            <p style={{marginTop: 0}}><strong>Please copy your new API Key.</strong></p>
+                            <p style={{color: '#c9302c', fontWeight: 'bold'}}>This is the only time you will be able to see it.</p>
+                            <code style={{ background: '#e0e0e0', padding: '10px', display: 'block', wordWrap: 'break-word' }}>
+                                {newApiKey}
+                            </code>
+                        </div>
+                    )}
+
+                    <p>Your current API Key status: <strong>{profile.apiKey ? '✅ Active' : '⚪ None'}</strong></p>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                        <button onClick={handleGenerateKey}>Generate New API Key</button>
+                        {profile.apiKey && <button onClick={handleRevokeKey} style={{background: '#d9534f', color: 'white'}}>Revoke API Key</button>}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
